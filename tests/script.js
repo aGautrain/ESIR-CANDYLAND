@@ -1,4 +1,5 @@
 const { execSync, exec, spawn, spawnSync } = require("child_process");
+const fs = require("fs");
 const path = require("path");
 const puppeteer = require("puppeteer");
 const args = process.argv;
@@ -43,21 +44,23 @@ serverInstance.on("error", error => {
 
   page.on("response", response => {
     if (response.request().resourceType() === "xhr") {
-      console.log(response.json());
+      // console.log(response);
+    }
+  });
+  page.on("console", msg => {
+    if (msg.type() === "debug") {
+      console.log(JSON.parse(msg.text())["eventType"]);
     }
   });
   await page.goto(`file:///${INDEX_PATH}`);
 
+  await page.evaluate(fs.readFileSync("./sniffer.js", "utf8"));
+
   await checkElement("#canvas_div", "canvas", page);
   await checkElement("#scores", "scores board", page);
 
-  // End after 10 sec
-  /*setTimeout(() => {
-    console.log("end of tests");
-    browser.close();
-  }, 10000);*/
-
   // await browser.close();
+  // serverInstance.kill();
 })();
 
 // serverInstance.kill();
