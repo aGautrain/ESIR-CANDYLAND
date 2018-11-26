@@ -1,4 +1,21 @@
-#canvas_div{
+#canvas_div {
   width: 500px;
   height: 500px;
+}
+
+#canvas_div #game_canvas, #game_canvas_overlay {
+  position: absolute;
+  width: 500px;
+  height: 500px;
+}
+
+#canvas_div #game_canvas_overlay {
+  background-color: grey;
+  opacity: 0;
+  text-align: center;
+}
+
+#canvas_div #game_canvas_overlay #game_canvas_overlay_text {
+  padding-top: 40%;
+  font-size: 50pt;
 }

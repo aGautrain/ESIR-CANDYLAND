@@ -2,9 +2,17 @@ var app = require('express')();
 var server = require('http').Server(app);
 var io = require('socket.io')(server);
 
+let nbLines = 20;
+let nbColumns = 20;
+let nbCandies = 1;
+let launchingCountdown = 5;
+let gameGrid = null;
+let score = new Map();
+
 // Starting the server
 server.listen(3000, function() {
   console.log('Candyland server running')
+  gameGrid = initGame(nbCandies);
 })
 
 // When there is a connection request
@@ -14,23 +22,53 @@ io.on('connection', function(socket) {
   console.log(socket.id + " connected");
 
   // The player is added to the game
-  gameGrid = addPlayer(gameGrid, socket.id);
-  score.set(socket.id, 0);
+  [gameGrid, score] = addPlayer(gameGrid, score, socket.id);
 
   // We emit the changes after adding the player
-  io.emit("changes", {
-    grid: gameGrid,
-    score: Array.from(score)
-  });
+  if (score.size == 1) {
+    io.emit("starting", {
+      grid: gameGrid,
+      score: Array.from(score)
+    });
+  } else {
+    io.emit("changes", {
+      grid: gameGrid,
+      score: Array.from(score)
+    });
+  }
 
   // When there is a movement request
   socket.on('movement', data => {
     // We update the game
     [gameGrid, score] = move(gameGrid, socket.id, data.direction, score);
-    if (areAllCandiesEaten(gameGrid))
+
+    // If someone won
+    if (areAllCandiesEaten(gameGrid)) {
+
+      // Tell the client who won
       io.emit("victory", {
         winner: Array.from(score).reduce((acc, val) => (acc = (acc[1] < val[1] ? val : acc)))[0]
-      })
+      });
+
+      let i = launchingCountdown;
+      let interval = setInterval(() => {
+          io.emit("launching", {
+            count: i
+          });
+          i--;
+          if (i == 0) clearInterval(interval);
+        },
+        1000
+      );
+
+      // Restart the game
+      [gameGrid, score] = restartGame(Array.from(score.keys()));
+
+      io.emit("starting", {
+        grid: gameGrid,
+        score: Array.from(score)
+      });
+    }
   })
 
   // When there is a disconnection request
@@ -41,6 +79,14 @@ io.on('connection', function(socket) {
     console.log(socket.id + ' disconnected');
   });
 });
+
+// Restart a new game
+restartGame = (allPlayerIds) => {
+  let score = new Map();
+  let gameGrid = initGame(nbCandies);
+  allPlayerIds.forEach(playerId => [gameGrid, score] = addPlayer(gameGrid, score, playerId))
+  return [gameGrid, score];
+}
 
 // Initializes a game with a given nb of candy
 initGame = (candyNb) => {
@@ -69,12 +115,13 @@ areAllCandiesEaten = (grid) => {
 }
 
 // Adds a player to the game
-addPlayer = (grid, playerId) => {
+addPlayer = (grid, score, playerId) => {
+  score.set(playerId, 0);
   for (i = 0; i < nbLines; i++) {
     for (j = 0; j < nbColumns; j++) {
       if (grid[i][j] == 0) {
         grid[i][j] = playerId;
-        return grid;
+        return [grid, score];
       }
     }
   }
@@ -160,9 +207,3 @@ guidGenerator = () => {
   };
   return S4();
 }
-
-// Game initialization
-let nbLines = 20;
-let nbColumns = 20;
-let gameGrid = initGame(10);
-let score = new Map();
