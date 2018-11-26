@@ -1,6 +1,9 @@
 let tailleCase = 25;
 let nbLignes = 20;
 let nbColonnes = 20;
+var canvas = document.getElementById("game_canvas");
+var ctx = canvas.getContext("2d");
+let currentlyPlaying = false;
 
 drawEmptyGrid = () => {
   ctx.fillStyle = '#e6e6e6';
@@ -54,22 +57,47 @@ updateScore = (score) => {
 
 var socket = io.connect('http://localhost:3000');
 
+socket.on("waiting", data => {
+  displayMessage("Waiting " + data.count);
+})
+
+socket.on("launching", data => {
+  displayMessage("Launching " + data.count);
+})
+
+socket.on("starting", data => {
+  currentlyPlaying = true;
+  deleteMessage();
+  drawGrid(data.grid);
+  updateScore(new Map(data.score));
+})
+
 socket.on("changes", data => {
-  // console.log("Received changes :\n");
   drawGrid(data.grid);
   updateScore(new Map(data.score));
 })
 
 socket.on("victory", data => {
-  document.getElementById("canvas_div").style.color = '#' + data.winner;
-  document.getElementById("canvas_div").innerHTML = data.winner + " won";
+  currentlyPlaying = false;
+  displayMessage(data.winner + " won", '#' + data.winner)
 })
 
-var canvas = document.getElementById("game_canvas");
-var ctx = canvas.getContext("2d");
+displayMessage = (message, color = "black") => {
+  document.getElementById("game_canvas_overlay").style.opacity = 0.5;
+  document.getElementById("game_canvas_overlay_text").style.color = color;
+  document.getElementById("game_canvas_overlay_text").innerHTML = message;
+}
+
+deleteMessage = () => {
+  document.getElementById("game_canvas_overlay").style.opacity = 0;
+}
 
 document.addEventListener("keydown", event => {
-  switch (event.keyCode) {
+  if (currentlyPlaying) move(event.keyCode);
+})
+
+move = (keyCode) => {
+  switch (keyCode) {
     case 37: //left
       socket.emit("movement", {
         direction: "left"
@@ -91,4 +119,4 @@ document.addEventListener("keydown", event => {
       })
       break;
   }
-})
+}
