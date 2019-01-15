@@ -3,7 +3,7 @@ let nbLignes = 20;
 let nbColonnes = 20;
 var canvas = document.getElementById("game_canvas");
 var ctx = canvas.getContext("2d");
-let currentlyPlaying = false;
+let currentlyPlaying = true;
 
 drawEmptyGrid = () => {
   ctx.fillStyle = '#e6e6e6';
@@ -62,10 +62,12 @@ document.getElementById("play_button").addEventListener("click", () => {
   var socket = io.connect('http://localhost:3000');
 
   socket.on("waiting", data => {
+    if (currentlyPlaying) currentlyPlaying = false
     displayMessage("Waiting " + data.count);
   })
 
   socket.on("launching", data => {
+    if (currentlyPlaying) currentlyPlaying = false
     displayMessage("Launching " + data.count);
   })
 
