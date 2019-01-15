@@ -136,6 +136,7 @@ addPlayer = (grid, score, playerId) => {
 // Deletes a player from the game
 deletePlayer = (grid, playerId, score) => {
   [x, y] = findPlayer(grid, playerId);
+  if (x == null || y == null) return [grid, score];
   grid[x][y] = 0;
   score.delete(playerId);
   broadcastChanges(grid, score);
@@ -193,6 +194,7 @@ findPlayer = (grid, player) => {
       if (grid[i][j] == player) return [i, j];
     }
   }
+  return [null, null];
 };
 
 // Broadcasts changes to all other players
