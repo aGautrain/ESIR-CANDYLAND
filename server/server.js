@@ -5,7 +5,7 @@ var io = require("socket.io")(server);
 
 let nbLines = 20;
 let nbColumns = 20;
-let nbCandies = 1;
+let nbCandies = 10;
 let launchingCountdown = 5;
 let gameGrid = null;
 let score = new Map();
