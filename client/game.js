@@ -5,7 +5,7 @@ var canvas = document.getElementById("game_canvas");
 var ctx = canvas.getContext("2d");
 let currentlyPlaying = true;
 
-var socket = io.connect("http://localhost:3000"); // Global variable (need for sniffer.js)
+var socket = io.connect("http://dev2.speed.yt:3000"); // Global variable (need for sniffer.js)
 
 drawEmptyGrid = () => {
   ctx.fillStyle = "#e6e6e6";

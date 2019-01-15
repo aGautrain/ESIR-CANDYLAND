@@ -1,3 +1,4 @@
+var express = require("express");
 var app = require("express")();
 var server = require("http").Server(app);
 var io = require("socket.io")(server);
@@ -14,6 +15,14 @@ server.listen(3000, function() {
   console.log("Candyland server running");
   gameGrid = initGame(nbCandies);
 });
+
+//app.get('/', function(req, res){
+	//res.sendFile("/home/user1/ESIR-CANDYLAND/client/index.html");
+//	res.send("coucou");
+//});
+
+app.use(express.static("../client"));
+app.listen(80, () => { console.log("Client launched") });
 
 // When there is a connection request
 io.on("connection", function(socket) {
