@@ -10,14 +10,20 @@
 <body>
   <h1>Candy game</h1>
 
-  <div id="canvas_div">
-    <canvas id="game_canvas" width="500" height="500"></canvas>
-    <div id="game_canvas_overlay">
-      <div id="game_canvas_overlay_text">
+  <div id="home">
+    <button id="play_button">PLAY</button>
+  </div>
+
+  <div id="game">
+    <div id="canvas_div">
+      <canvas id="game_canvas" width="500" height="500"></canvas>
+      <div id="game_canvas_overlay">
+        <div id="game_canvas_overlay_text">
+        </div>
       </div>
     </div>
-  </div>
-  <div id="scores">
+    <div id="scores">
+    </div>
   </div>
 
   <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/2.1.1/socket.io.js"></script>

@@ -55,68 +55,73 @@ updateScore = (score) => {
   }
 }
 
-var socket = io.connect('http://localhost:3000');
+document.getElementById("play_button").addEventListener("click", () => {
 
-socket.on("waiting", data => {
-  displayMessage("Waiting " + data.count);
-})
+  document.getElementById("play_button").style.visibility = "hidden";
 
-socket.on("launching", data => {
-  displayMessage("Launching " + data.count);
-})
+  var socket = io.connect('http://localhost:3000');
 
-socket.on("starting", data => {
-  currentlyPlaying = true;
-  deleteMessage();
-  drawGrid(data.grid);
-  updateScore(new Map(data.score));
-})
+  socket.on("waiting", data => {
+    displayMessage("Waiting " + data.count);
+  })
 
-socket.on("changes", data => {
-  drawGrid(data.grid);
-  updateScore(new Map(data.score));
-})
+  socket.on("launching", data => {
+    displayMessage("Launching " + data.count);
+  })
 
-socket.on("victory", data => {
-  currentlyPlaying = false;
-  displayMessage(data.winner + " won", '#' + data.winner)
-})
+  socket.on("starting", data => {
+    currentlyPlaying = true;
+    deleteMessage();
+    drawGrid(data.grid);
+    updateScore(new Map(data.score));
+  })
 
-displayMessage = (message, color = "black") => {
-  document.getElementById("game_canvas_overlay").style.opacity = 0.5;
-  document.getElementById("game_canvas_overlay_text").style.color = color;
-  document.getElementById("game_canvas_overlay_text").innerHTML = message;
-}
+  socket.on("changes", data => {
+    drawGrid(data.grid);
+    updateScore(new Map(data.score));
+  })
 
-deleteMessage = () => {
-  document.getElementById("game_canvas_overlay").style.opacity = 0;
-}
+  socket.on("victory", data => {
+    currentlyPlaying = false;
+    displayMessage(data.winner + " won", '#' + data.winner)
+  })
 
-document.addEventListener("keydown", event => {
-  if (currentlyPlaying) move(event.keyCode);
-})
-
-move = (keyCode) => {
-  switch (keyCode) {
-    case 37: //left
-      socket.emit("movement", {
-        direction: "left"
-      })
-      break;
-    case 38: // up
-      socket.emit("movement", {
-        direction: "up"
-      })
-      break;
-    case 39: // right
-      socket.emit("movement", {
-        direction: "right"
-      })
-      break;
-    case 40: // down
-      socket.emit("movement", {
-        direction: "down"
-      })
-      break;
+  displayMessage = (message, color = "black") => {
+    document.getElementById("game_canvas_overlay").style.opacity = 0.5;
+    document.getElementById("game_canvas_overlay_text").style.color = color;
+    document.getElementById("game_canvas_overlay_text").innerHTML = message;
   }
-}
+
+  deleteMessage = () => {
+    document.getElementById("game_canvas_overlay").style.opacity = 0;
+  }
+
+  document.addEventListener("keydown", event => {
+    if (currentlyPlaying) move(event.keyCode);
+  })
+
+  move = (keyCode) => {
+    switch (keyCode) {
+      case 37: //left
+        socket.emit("movement", {
+          direction: "left"
+        })
+        break;
+      case 38: // up
+        socket.emit("movement", {
+          direction: "up"
+        })
+        break;
+      case 39: // right
+        socket.emit("movement", {
+          direction: "right"
+        })
+        break;
+      case 40: // down
+        socket.emit("movement", {
+          direction: "down"
+        })
+        break;
+    }
+  }
+})

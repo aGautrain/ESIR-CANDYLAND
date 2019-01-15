@@ -50,24 +50,29 @@ io.on('connection', function(socket) {
         winner: Array.from(score).reduce((acc, val) => (acc = (acc[1] < val[1] ? val : acc)))[0]
       });
 
+
       let i = launchingCountdown;
       let interval = setInterval(() => {
           io.emit("launching", {
             count: i
           });
           i--;
-          if (i == 0) clearInterval(interval);
+          if (i == 0) {
+            clearInterval(interval);
+
+            // Restart the game
+            [gameGrid, score] = restartGame(Array.from(score.keys()));
+
+            io.emit("starting", {
+              grid: gameGrid,
+              score: Array.from(score)
+            });
+          }
         },
         1000
       );
 
-      // Restart the game
-      [gameGrid, score] = restartGame(Array.from(score.keys()));
 
-      io.emit("starting", {
-        grid: gameGrid,
-        score: Array.from(score)
-      });
     }
   })
 
