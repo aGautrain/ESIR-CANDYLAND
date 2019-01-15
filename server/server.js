@@ -114,7 +114,7 @@ initGame = candyNb => {
     grid[Math.floor(Math.random() * nbLines)][
       Math.floor(Math.random() * nbColumns)
     ] =
-      "c";
+    "c";
 
   return grid;
 };
