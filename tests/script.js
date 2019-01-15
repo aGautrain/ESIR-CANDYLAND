@@ -36,17 +36,7 @@ serverInstance.on("error", error => {
 (async () => {
   const browser = await puppeteer.launch({ headless: false });
   const page = await browser.newPage();
-  page.on("request", request => {
-    if (request.resourceType() === "xhr") {
-      // Exchange with server
-    }
-  });
 
-  page.on("response", response => {
-    if (response.request().resourceType() === "xhr") {
-      // console.log(response);
-    }
-  });
   page.on("console", msg => {
     if (msg.type() === "debug") {
       console.log(JSON.parse(msg.text())["eventType"]);
@@ -58,6 +48,9 @@ serverInstance.on("error", error => {
 
   await checkElement("#canvas_div", "canvas", page);
   await checkElement("#scores", "scores board", page);
+  await checkElement("#play_button", "button to start game", page);
+
+  await page.click("#play_button");
 
   // await browser.close();
   // serverInstance.kill();
