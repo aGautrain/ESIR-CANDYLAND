@@ -58,7 +58,6 @@ io.on("connection", function(socket) {
         io.emit("launching", {
           count: i
         });
-        i--;
         if (i == 0) {
           clearInterval(interval);
 
@@ -70,6 +69,7 @@ io.on("connection", function(socket) {
             score: Array.from(score)
           });
         }
+        i--;
       }, 1000);
     }
   });
@@ -105,7 +105,7 @@ initGame = candyNb => {
     grid[Math.floor(Math.random() * nbLines)][
       Math.floor(Math.random() * nbColumns)
     ] =
-      "c";
+    "c";
 
   return grid;
 };
