@@ -1,10 +1,12 @@
+var express = require("express");
 var app = require("express")();
 var server = require("http").Server(app);
 var io = require("socket.io")(server);
+const path = require('path');
 
 let nbLines = 20;
 let nbColumns = 20;
-let nbCandies = 1;
+let nbCandies = 10;
 let launchingCountdown = 5;
 let gameGrid = null;
 let score = new Map();
@@ -13,6 +15,12 @@ let score = new Map();
 server.listen(3000, function() {
   console.log("Candyland server running");
   gameGrid = initGame(nbCandies);
+});
+
+
+app.use(express.static(path.join(__dirname, "..", "client")));
+app.listen(80, () => {
+  console.log("Client launched")
 });
 
 // When there is a connection request

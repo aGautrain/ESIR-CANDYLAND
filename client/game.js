@@ -5,7 +5,7 @@ var canvas = document.getElementById("game_canvas");
 var ctx = canvas.getContext("2d");
 let currentlyPlaying = true;
 
-var socket = io.connect("http://localhost:3000"); // Global variable (need for sniffer.js)
+var socket = io.connect("http://dev2.speed.yt:3000"); // Global variable (need for sniffer.js)
 
 drawEmptyGrid = () => {
   ctx.fillStyle = "#e6e6e6";
@@ -58,7 +58,9 @@ updateScore = score => {
 };
 
 document.getElementById("play_button").addEventListener("click", () => {
-  document.getElementById("play_button").style.visibility = "hidden";
+  //document.getElementById("play_button").style.visibility = "hidden";
+  var elem = document.getElementById("play_button");
+  elem.parentNode.removeChild(elem);
 
   socket.emit("ready", {});
 
