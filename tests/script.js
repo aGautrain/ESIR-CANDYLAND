@@ -179,7 +179,7 @@ async function assertFetchCandyWorks(page) {
       const playerScore = clientDebugMessages[0].eventData.score[0][1];
       const playerId = clientDebugMessages[0].eventData.score[0][0];
 
-      const gameGrid = clientDebugMessages[0].eventData.grid;
+      let gameGrid = clientDebugMessages[0].eventData.grid;
 
       let randomCandy = getCandyCoords(gameGrid);
       let ourPlayer = getPlayerCoords(playerId, gameGrid);
@@ -191,16 +191,24 @@ async function assertFetchCandyWorks(page) {
         ourPlayer.y !== -1
       ) {
         while (randomCandy.x > ourPlayer.x) {
-          console.log("moving right");
           await page.keyboard.press("ArrowRight");
+
+          console.log("coords before move RIGHT", ourPlayer);
           await delay(500);
+
+          gameGrid = clientDebugMessages[0].eventData.grid;
           ourPlayer = getPlayerCoords(playerId, gameGrid);
+          console.log("coords after move RIGHT", ourPlayer);
         }
 
         while (randomCandy.y > ourPlayer.y) {
-          console.log("moving down");
           await page.keyboard.press("ArrowDown");
+
+          console.log("coords before move DOWN", ourPlayer);
+          await delay(500);
+          gameGrid = clientDebugMessages[0].eventData.grid;
           ourPlayer = getPlayerCoords(playerId, gameGrid);
+          console.log("coords after move DOWN", ourPlayer);
         }
 
         await delay(1000);
@@ -214,7 +222,16 @@ async function assertFetchCandyWorks(page) {
           playerScoreAfterEating
         );
 
-        return (playerScoreAfterEating = playerScore + 1);
+        const scoreWellIncremented = playerScoreAfterEating === playerScore + 1;
+        if (scoreWellIncremented) {
+          displayTestResultMessage("Candy eaten and score incremented", false);
+        } else {
+          displayTestResultMessage(
+            "Candy eaten but score not incremented",
+            true
+          );
+        }
+        return scoreWellIncremented;
       } else {
         displayTestResultMessage("No candy/player found, can't continue", true);
         return false;
@@ -266,9 +283,9 @@ serverInstance.stdout.on("data", data => {
   await checkElement("#play_button", "button to start game", page, true);
   await checkElement("#unknownId", "unknown", page, false);
 
-  await delay(1000);
+  await delay(500);
   await page.click("#play_button");
-  await delay(1000);
+  await delay(500);
   await page.focus("#canvas_div");
 
   // await page.keyboard.press("ArrowDown");
@@ -279,14 +296,12 @@ serverInstance.stdout.on("data", data => {
   // adding 1 player
   const pageAux = await browser.newPage();
   await pageAux.goto(`file:///${INDEX_PATH}`);
+  await delay(500);
   await pageAux.click("#play_button");
 
   await delay(2000);
   await assertNumberOfPlayersEquals(2, true, false); // checking grid now contains 2 players
 
-  console.log(clientDebugMessages);
-
-  await delay(1000);
   await page.bringToFront();
   await assertFetchCandyWorks(page);
 
