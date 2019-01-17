@@ -4,14 +4,27 @@
   width: 100px;
 }
 
-#main_title{
+#main_title {
   text-align: center;
+}
+
+#game {
+  display: grid;
+  grid-template-columns: 50% 5% auto;
 }
 
 #game #canvas_div {
   width: 500px;
   height: 500px;
 padding-left:50px;
+grid-column-start: 1;
+}
+
+#game #score {
+    grid-column-start: 3;
+    font-size: large;
+    text-align: center;
+
 }
 
 #game #canvas_div #game_canvas, #game_canvas_overlay {
