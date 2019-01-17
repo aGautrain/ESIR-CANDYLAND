@@ -1,11 +1,13 @@
-let tailleCase = 25;
-let nbLignes = 20;
-let nbColonnes = 20;
 var canvas = document.getElementById("game_canvas");
 var ctx = canvas.getContext("2d");
+
+let tailleCase = 25;
+let nbLignes = canvas.width / tailleCase;
+let nbColonnes = canvas.height / tailleCase;
 let currentlyPlaying = true;
 
-var socket = io.connect("http://dev2.speed.yt:3000"); // Global variable (need for sniffer.js)
+var socket = io.connect("http://localhost:3000"); // Global variable (need for sniffer.js)
+
 
 drawEmptyGrid = () => {
   ctx.fillStyle = "#e6e6e6";
@@ -51,7 +53,7 @@ updateScore = score => {
   for (player of score.keys()) {
     var innerDiv = document.createElement("div");
     innerDiv.id = player;
-    innerDiv.innerHTML = player + " " + score.get(player);
+    innerDiv.innerHTML = player + " : " + score.get(player);
     innerDiv.style.color = "#" + player;
     document.getElementById("scores").appendChild(innerDiv);
   }
@@ -65,8 +67,10 @@ document.getElementById("play_button").addEventListener("click", () => {
   socket.emit("ready", {});
 
   socket.on("waiting", data => {
+    updateScore(new Map());
     if (currentlyPlaying) currentlyPlaying = false;
-    displayMessage("Waiting " + data.count);
+    let nbPlayers = data.score.reduce(acc => acc + 1, 0);
+    displayMessage("Waiting " + data.count + " s </p> " + nbPlayers + " player" + (nbPlayers > 1 ? "s" : ""), "black", 1);
   });
 
   socket.on("launching", data => {
@@ -82,6 +86,7 @@ document.getElementById("play_button").addEventListener("click", () => {
   });
 
   socket.on("changes", data => {
+    console.log("changes");
     drawGrid(data.grid);
     updateScore(new Map(data.score));
   });
@@ -91,8 +96,9 @@ document.getElementById("play_button").addEventListener("click", () => {
     displayMessage(data.winner + " won", "#" + data.winner);
   });
 
-  displayMessage = (message, color = "black") => {
-    document.getElementById("game_canvas_overlay").style.opacity = 0.5;
+  displayMessage = (message, color = "black", opacity = 0.5) => {
+    console.log("message : " + message + " color : " + color + " opacity " + opacity);
+    document.getElementById("game_canvas_overlay").style.opacity = 1;
     document.getElementById("game_canvas_overlay_text").style.color = color;
     document.getElementById("game_canvas_overlay_text").innerHTML = message;
   };
