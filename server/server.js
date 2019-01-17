@@ -7,7 +7,8 @@ const path = require('path');
 let nbLines = 20;
 let nbColumns = 20;
 let nbCandies = 10;
-let launchingCountdown = 5;
+let launchingCountdown = 3;
+let waitingCountdown = 15;
 let gameGrid = null;
 let score = new Map();
 
@@ -35,10 +36,25 @@ io.on("connection", function(socket) {
 
     // We emit the changes after adding the player
     if (score.size == 1) {
-      io.emit("starting", {
-        grid: gameGrid,
-        score: Array.from(score)
-      });
+
+      // Waiting for other players
+      let i = waitingCountdown;
+      let interval = setInterval(() => {
+        io.emit("waiting", {
+          count: i,
+          score: Array.from(score)
+        });
+        if (i == 0) {
+          clearInterval(interval);
+
+          io.emit("starting", {
+            grid: gameGrid,
+            score: Array.from(score)
+          });
+        }
+        i--;
+      }, 1000);
+
     } else {
       io.emit("changes", {
         grid: gameGrid,
