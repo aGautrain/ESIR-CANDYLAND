@@ -60,7 +60,7 @@ updateScore = score => {
 document.getElementById("play_button").addEventListener("click", () => {
   //document.getElementById("play_button").style.visibility = "hidden";
   var elem = document.getElementById("play_button");
-elem.parentNode.removeChild(elem);
+  elem.parentNode.removeChild(elem);
 
   socket.emit("ready", {});
 
