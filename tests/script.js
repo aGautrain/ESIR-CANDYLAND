@@ -1,4 +1,9 @@
-const { execSync, exec, spawn, spawnSync } = require("child_process");
+const {
+  execSync,
+  exec,
+  spawn,
+  spawnSync
+} = require("child_process");
 const fs = require("fs");
 const path = require("path");
 const puppeteer = require("puppeteer");
@@ -246,7 +251,9 @@ serverInstance.stdout.on("data", data => {
 });*/
 
 (async () => {
-  const browser = await puppeteer.launch({ headless: false });
+  const browser = await puppeteer.launch({
+    headless: false
+  });
   const page = await browser.newPage();
 
   page.on("console", msg => {
