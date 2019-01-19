@@ -8,7 +8,7 @@ let nbLines = 20;
 let nbColumns = 20;
 let nbCandies = 10;
 let launchingCountdown = 3;
-let waitingCountdown = 15;
+let waitingCountdown = 5;
 let gameGrid = null;
 let score = new Map();
 
@@ -42,14 +42,14 @@ io.on("connection", function(socket) {
       let interval = setInterval(() => {
         io.emit("waiting", {
           count: i,
-          score: Array.from(score)
+          nbPlayers: Array.from(score).reduce(acc => acc + 1, 0)
         });
         if (i == 0) {
           clearInterval(interval);
 
           io.emit("starting", {
             grid: gameGrid,
-            score: Array.from(score)
+            nbPlayers: Array.from(score)
           });
         }
         i--;

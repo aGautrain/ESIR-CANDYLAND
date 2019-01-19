@@ -69,8 +69,7 @@ document.getElementById("play_button").addEventListener("click", () => {
   socket.on("waiting", data => {
     updateScore(new Map());
     if (currentlyPlaying) currentlyPlaying = false;
-    let nbPlayers = data.score.reduce(acc => acc + 1, 0);
-    displayMessage("Waiting " + data.count + " s </p> " + nbPlayers + " player" + (nbPlayers > 1 ? "s" : ""), "black", 1);
+    displayMessage("Waiting " + data.count + " s </p> " + data.nbPlayers + " player" + (data.nbPlayers > 1 ? "s" : ""), "black", 1);
   });
 
   socket.on("launching", data => {
